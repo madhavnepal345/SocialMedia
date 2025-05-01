@@ -1,5 +1,33 @@
-{% extends "base.html" %}
-{% block body%}
-<h1>Homepage</h1>
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Home</h2>
 
-{% endblock%}
+<form method="post">
+    {% csrf_token %}
+    {{ p_form.as_p }}
+    <button type="submit">Post</button>
+</form>
+
+<hr>
+
+{% for post in posts %}
+    <div style="border:1px solid #000; padding:10px; margin:10px 0;">
+        <p><b>{{ post.author.username }}</b>: {{ post.content }}</p>
+        <p>Likes: {{ post.likes.count }} 
+            <a href="{% url 'like_post' post.id %}">Like/Unlike</a>
+        </p>
+        
+        <h4>Comments:</h4>
+        {% for comment in post.comments.all %}
+            <p><i>{{ comment.author.username }}:</i> {{ comment.content }}</p>
+        {% endfor %}
+        
+        <form method="post" action="{% url 'add_comment' post.id %}">
+            {% csrf_token %}
+            {{ c_form.as_p }}
+            <button type="submit">Comment</button>
+        </form>
+    </div>
+{% endfor %}
+
+{% endblock %}
