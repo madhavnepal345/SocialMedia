@@ -6,7 +6,7 @@ from .models import Post,Comment
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        fields=['id','username','passeord']
+        fields=['id','username','password']
         extra_kwargs={'password':{'write_only':True}}
 
     def create(self,validated_data):

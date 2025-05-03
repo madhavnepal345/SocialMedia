@@ -5,13 +5,14 @@ from rest_framework.authtoken.models import  Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from .serializer import PostSerializer,CommentSerializer,UserSerializer
 from django.contrib.auth.models import User
+from .models import Post,Comment
 
-# User signup API
+
 class SignupAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-# Login API (return token)
+
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data,context={'request': request})
@@ -20,7 +21,6 @@ class CustomAuthToken(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         return Response({'token': token.key})
 
-# Post APIs
 class PostListCreateAPIView(generics.ListCreateAPIView):
     queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
@@ -34,7 +34,6 @@ class PostRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-# Like/Unlike API
 class LikePostAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -47,7 +46,7 @@ class LikePostAPIView(APIView):
             post.likes.add(request.user)
             return Response({'message': 'Post liked'}, status=status.HTTP_200_OK)
 
-# Comment APIs
+
 class CommentListCreateAPIView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
